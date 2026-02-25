@@ -3,9 +3,9 @@
 AutoMatch SI is a modern, mobile-friendly car discovery tool specifically tailored for the Slovenian automotive market. It streamlines the car-buying journey by matching users with vehicles based on lifestyle, budget, and ownership costs through an intuitive, interactive interface.
 
 The application is a pure frontend solution—it runs entirely in the browser and requires no backend infrastructure.
-![alt text](Assets\LandingPage.png)
+![Vibe Selection](Assets/LandingPage.png)
 
-![alt text](Assets\Filter.png)
+![Budget and Filters](Assets/Filter.png)
 
 
 
