@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AutoMatch SI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:     #03090f;
+  --bg2:    #0a1628;
+  --bg3:    #111f33;
+  --border: #1a2d47;
+  --accent: #00c2ff;
+  --accent2:#0055ff;
+  --green:  #00e676;
+  --red:    #ff3d57;
+  --gold:   #ffd740;
+  --text:   #e8f4ff;
+  --muted:  #4a6b8a;
+  --dim:    #243550;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  font-family:'Manrope',sans-serif;
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(3,9,15,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:58px;
+  max-width:100%;
+}
+.nav-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;cursor:pointer;
+}
+.nav-logo span{color:var(--accent)}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{
+  padding:6px 14px;border-radius:8px;border:none;
+  background:none;color:var(--muted);cursor:pointer;
+  font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.5px;transition:all .2s;position:relative;
+}
+.nav-tab.active{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--accent);color:var(--bg);
+  font-size:9px;font-weight:800;width:16px;height:16px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  display:none;
+}
+
+/* ── LAYOUT ── */
+.page{display:none;min-height:calc(100vh - 58px);position:relative;z-index:1}
+.page.active{display:flex;flex-direction:column;align-items:center}
+.container{width:100%;max-width:460px;padding:0 20px}
+
+/* ── PROGRESS ── */
+#progressBar{
+  width:100%;max-width:460px;padding:16px 20px 0;
+  display:flex;gap:6px;
+}
+.pb-item{flex:1}
+.pb-line{height:3px;border-radius:2px;background:var(--border);transition:background .4s}
+.pb-line.on{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.pb-txt{font-size:8px;color:var(--dim);margin-top:4px;letter-spacing:1px;font-family:'DM Mono',monospace}
+.pb-txt.on{color:var(--accent)}
+
+/* ── TRANSITIONS ── */
+#quizView{
+  flex:1;width:100%;max-width:460px;padding:20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .3s,transform .3s;
+}
+#quizView.fade{opacity:0;transform:translateY(14px)}
+
+/* ── VIBE ── */
+.vibe-h{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(38px,11vw,64px);letter-spacing:2px;
+  text-align:center;line-height:.95;
+}
+.vibe-h em{font-style:normal;color:var(--accent)}
+.vibe-sub{text-align:center;color:var(--muted);font-size:11px;letter-spacing:2px;margin:14px 0 28px;font-family:'DM Mono',monospace}
+.vibe-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.vibe-card{
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;
+  padding:22px 14px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:border-color .2s,background .2s,transform .15s,box-shadow .2s;
+}
+.vibe-card:hover{
+  border-color:var(--accent);background:#0a1f38;
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,194,255,.15);
+}
+.vibe-card:active{transform:scale(.97)}
+.vibe-icon{font-size:46px;line-height:1}
+.vibe-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--text)}
+.vibe-desc{font-size:10px;color:var(--muted);text-align:center;line-height:1.4}
+
+/* ── QUESTION ── */
+.q-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:20px}
+.q-icon{font-size:68px;text-align:center}
+.q-text{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(26px,6vw,42px);letter-spacing:2px;
+  color:var(--text);text-align:center;margin:20px 0 32px;line-height:1.1;
+}
+.q-btns{display:flex;gap:12px;width:100%;max-width:400px}
+.btn-y,.btn-n{
+  flex:1;padding:18px 10px;border-radius:16px;border:none;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+  letter-spacing:.5px;
+}
+.btn-y{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;box-shadow:0 6px 24px rgba(0,194,255,.25);
+}
+.btn-n{
+  background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);
+}
+.btn-y:hover{transform:scale(1.04);box-shadow:0 8px 32px rgba(0,194,255,.4)}
+.btn-n:hover{transform:scale(1.04);color:var(--text);border-color:var(--muted)}
+.btn-y:active,.btn-n:active{transform:scale(.97)}
+
+/* ── BUDGET ── */
+.budget-h{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2px;text-align:center;line-height:1}
+.budget-h em{font-style:normal;color:var(--accent)}
+.budget-sub{color:var(--muted);font-size:11px;letter-spacing:2px;margin:10px 0 26px;text-align:center;font-family:'DM Mono',monospace}
+.s-card{background:var(--bg2);border-radius:20px;padding:22px;border:1px solid var(--border);width:100%;margin-bottom:14px}
+.s-row{display:flex;justify-content:space-between;margin-bottom:14px;align-items:baseline}
+.s-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;font-family:'DM Mono',monospace}
+.s-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;border-radius:4px;outline:none;cursor:pointer;
+  background:linear-gradient(to right,var(--accent),var(--accent2));
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--bg);cursor:pointer;
+  box-shadow:0 0 8px rgba(0,194,255,.4);
+}
+.s-mm{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--dim);font-family:'DM Mono',monospace}
+.toggle-row{
+  background:var(--bg2);border-radius:20px;padding:18px 22px;
+  border:1px solid var(--border);width:100%;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.toggle-info .t-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px}
+.toggle-info .t-sub{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{
+  position:absolute;inset:0;background:var(--dim);border-radius:12px;
+  cursor:pointer;transition:background .2s;
+}
+.toggle input:checked + .toggle-track{background:var(--accent)}
+.toggle-track::after{
+  content:'';position:absolute;left:3px;top:3px;
+  width:18px;height:18px;border-radius:50%;background:white;
+  transition:transform .2s;
+}
+.toggle input:checked + .toggle-track::after{transform:translateX(20px)}
+.btn-go{
+  width:100%;padding:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:16px;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;color:white;
+  letter-spacing:3px;cursor:pointer;
+  box-shadow:0 8px 32px rgba(0,194,255,.3);transition:transform .15s,box-shadow .15s;
+}
+.btn-go:hover{transform:scale(1.02);box-shadow:0 12px 40px rgba(0,194,255,.45)}
+.btn-go:active{transform:scale(.98)}
+
+/* ── RESULTS HEADER ── */
+.results-h{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2px;text-align:center;line-height:1}
+.results-h em{font-style:normal;color:var(--accent)}
+.results-sub{color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:6px;text-align:center;font-family:'DM Mono',monospace}
+
+/* ── CARD STACK ── */
+#cardStack{
+  position:relative;height:570px;width:100%;max-width:370px;
+  margin:20px auto 0;
+}
+.car-card{
+  position:absolute;width:100%;border-radius:24px;overflow:hidden;
+  background:linear-gradient(160deg,#0d1e30,#071118);
+  border:1.5px solid var(--border);
+  box-shadow:0 24px 60px rgba(0,0,0,.7);
+  user-select:none;cursor:grab;
+  transform-origin:center bottom;
+}
+.car-card:active{cursor:grabbing}
+.badge-like,.badge-nope{
+  position:absolute;top:22px;padding:5px 14px;
+  border-radius:8px;font-family:'Bebas Neue',sans-serif;
+  font-size:26px;letter-spacing:3px;z-index:20;
+  opacity:0;pointer-events:none;transition:opacity .1s;
+}
+.badge-like{left:22px;border:3px solid var(--green);color:var(--green);transform:rotate(-14deg)}
+.badge-nope{right:22px;border:3px solid var(--red);color:var(--red);transform:rotate(14deg)}
+
+/* card internals */
+.cc-img{
+  height:180px;background:linear-gradient(135deg,#0a1f38,#071118);
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;position:relative;overflow:hidden;
+}
+.cc-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cc-img-fallback{font-size:80px;z-index:1}
+.si-badge{
+  position:absolute;top:12px;left:12px;
+  background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.4);
+  color:var(--green);padding:4px 10px;border-radius:20px;
+  font-size:10px;font-family:'DM Mono',monospace;font-weight:500;
+  backdrop-filter:blur(8px);z-index:2;
+}
+.cc-body{padding:18px 22px 0}
+.cc-rank{font-size:10px;color:var(--muted);letter-spacing:3px;font-family:'DM Mono',monospace}
+.cc-make{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;line-height:1}
+.cc-model{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:1px}
+.cc-price{
+  font-family:'DM Mono',monospace;font-size:26px;font-weight:700;
+  margin-top:12px;
+}
+.cc-price small{font-size:12px;color:var(--muted);font-weight:400}
+.cc-specs{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:14px 22px;
+}
+.spec{background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px;border:1px solid var(--border)}
+.spec-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;font-family:'DM Mono',monospace;text-transform:uppercase}
+.spec-val{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.5px;margin-top:2px}
+.cc-maint{
+  margin:0 22px 14px;padding:12px 14px;
+  background:rgba(0,194,255,.06);border:1px solid rgba(0,194,255,.15);
+  border-radius:12px;
+}
+.maint-title{font-size:9px;color:var(--accent);letter-spacing:2px;font-family:'DM Mono',monospace;margin-bottom:8px}
+.maint-row{display:flex;justify-content:space-between;gap:8px}
+.maint-item{text-align:center;flex:1}
+.maint-item .mi-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text)}
+.maint-item .mi-lbl{font-size:8px;color:var(--muted);font-family:'DM Mono',monospace}
+.cc-tags{padding:0 22px 14px;display:flex;gap:5px;flex-wrap:wrap}
+.tag{
+  background:rgba(0,194,255,.1);border:1px solid rgba(0,194,255,.2);
+  color:#7dd3fc;border-radius:20px;padding:3px 9px;
+  font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.5px;
+}
+.tag.green{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.2);color:#69f0ae}
+.cc-actions{padding:0 22px 20px;display:flex;gap:8px}
+.cc-link{
+  flex:1;display:block;text-align:center;padding:13px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:12px;font-family:'Bebas Neue',sans-serif;
+  font-size:16px;color:white;text-decoration:none;letter-spacing:2px;
+  transition:opacity .2s;
+}
+.cc-link:hover{opacity:.85}
+.cc-like-btn{
+  width:50px;border-radius:12px;border:1.5px solid var(--border);
+  background:var(--bg2);font-size:20px;cursor:pointer;
+  transition:background .2s,border-color .2s;
+}
+.cc-like-btn:hover{background:rgba(0,230,118,.1);border-color:var(--green)}
+
+/* hint + restart */
+.hint{font-size:10px;color:var(--dim);letter-spacing:1px;text-align:center;margin-top:10px;font-family:'DM Mono',monospace}
+.btn-restart{
+  margin:20px 0;background:none;border:1px solid var(--border);
+  border-radius:12px;color:var(--muted);padding:11px 28px;cursor:pointer;
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;
+  transition:border-color .2s,color .2s;
+}
+.btn-restart:hover{border-color:var(--accent);color:var(--accent)}
+
+/* share bar */
+.share-bar{
+  margin-top:16px;width:100%;max-width:370px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+}
+.share-url{
+  flex:1;font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.btn-copy{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  color:var(--muted);padding:5px 10px;cursor:pointer;
+  font-size:11px;font-family:'DM Mono',monospace;transition:all .2s;flex-shrink:0;
+}
+.btn-copy:hover{border-color:var(--accent);color:var(--accent)}
+.btn-copy.copied{border-color:var(--green);color:var(--green)}
+
+/* ── LIBRARY PAGE ── */
+#libPage{padding:24px 20px}
+#libPage .lib-title{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px}
+#libPage .lib-title em{font-style:normal;color:var(--accent)}
+#libPage .lib-sub{font-size:11px;color:var(--muted);letter-spacing:1px;margin:8px 0 24px;font-family:'DM Mono',monospace}
+.lib-empty{
+  text-align:center;padding:80px 20px;
+}
+.lib-empty .le-icon{font-size:64px}
+.lib-empty .le-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--muted);margin-top:16px}
+.lib-empty .le-sub{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.6}
+.lib-grid{display:flex;flex-direction:column;gap:12px}
+.lib-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;display:flex;gap:0;
+  transition:border-color .2s;
+}
+.lib-card:hover{border-color:var(--accent)}
+.lib-img{
+  width:100px;flex-shrink:0;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+  position:relative;overflow:hidden;
+}
+.lib-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.lib-img-fb{font-size:40px;z-index:1}
+.lib-info{flex:1;padding:14px 16px}
+.lib-make{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1}
+.lib-model{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent);letter-spacing:1px}
+.lib-price{font-family:'DM Mono',monospace;font-size:18px;font-weight:700;margin-top:8px}
+.lib-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.lib-meta{font-size:10px;color:var(--muted);margin-top:6px;font-family:'DM Mono',monospace}
+.lib-actions{padding:14px 14px 14px 0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;gap:8px}
+.lib-link{
+  display:block;padding:8px 14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;font-family:'Bebas Neue',sans-serif;
+  font-size:13px;color:white;text-decoration:none;letter-spacing:1.5px;
+  white-space:nowrap;
+}
+.lib-remove{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  color:var(--muted);padding:6px 10px;cursor:pointer;font-size:11px;
+  font-family:'DM Mono',monospace;transition:all .2s;
+}
+.lib-remove:hover{border-color:var(--red);color:var(--red)}
+.lib-si{
+  font-size:9px;color:var(--green);font-family:'DM Mono',monospace;
+  background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+  padding:3px 8px;border-radius:6px;
+}
+.maint-summary{
+  margin-top:20px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:18px;padding:20px;
+}
+.maint-summary h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:16px;color:var(--accent)}
+.maint-total-row{display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.maint-total-label{font-size:12px;color:var(--muted)}
+.maint-total-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:700}
+
+/* ── DATA STATUS ── */
+.data-notice{
+  width:100%;max-width:460px;padding:10px 20px;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,215,64,.06);border-bottom:1px solid rgba(255,215,64,.15);
+}
+.dn-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:pulse 2s infinite}
+.dn-txt{font-size:10px;color:rgba(255,215,64,.7);font-family:'DM Mono',monospace;letter-spacing:.5px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LOADING ── */
+.loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;gap:16px;
+}
+.spinner{
+  width:40px;height:40px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('quiz')">AUTO<span>MATCH</span> <span style="font-size:11px;color:var(--muted);letter-spacing:1px;font-family:'DM Mono',monospace">SI</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-quiz" onclick="showPage('quiz')">🔍 ISKANJE</button>
+    <button class="nav-tab" id="tab-lib" onclick="showPage('lib')">
+      ❤️ SHRANJENI
+      <span class="nav-badge" id="libBadge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- QUIZ PAGE -->
+<div class="page active" id="quizPage">
+  <div id="dataNotice" class="data-notice" style="display:none">
+    <div class="dn-dot"></div>
+    <span class="dn-txt" id="dataNoticeText">Nalagam podatke...</span>
+  </div>
+  <div id="progressBar">
+    <div class="pb-item"><div class="pb-line on" id="pb0"></div><div class="pb-txt on" id="pt0">VIBE</div></div>
+    <div class="pb-item"><div class="pb-line" id="pb1"></div><div class="pb-txt" id="pt1">FILTER</div></div>
+    <div class="pb-item"><div class="pb-line" id="pb2"></div><div class="pb-txt" id="pt2">BUDGET</div></div>
+    <div class="pb-item"><div class="pb-line" id="pb3"></div><div class="pb-txt" id="pt3">REZULTATI</div></div>
+  </div>
+  <div id="quizView"></div>
+</div>
+
+<!-- LIBRARY PAGE -->
+<div class="page" id="libPage">
+  <div style="width:100%;max-width:460px">
+    <div class="lib-title">SHRANJENI<br/><em>AVTOMOBILI</em></div>
+    <div class="lib-sub">TVOJI VŠEČKI — PRIMERJAJ IN KUPI</div>
+    <div id="libContent"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// FALLBACK DATA (used when cars.json not found / no server)
+// ═══════════════════════════════════════════════════════════════════
+const FALLBACK_CARS = [
+  {id:"toyota-yaris-2021",make:"Toyota",model:"Yaris",year:2021,price:14500,km:38000,length:3.94,trunk:286,fuel:"petrol",owners:1,type:"city",img:"🚗",siOrigin:false,tags:["small","reliable","low-maintenance"],link:"https://www.avto.net/Ads/results.asp?znamka=Toyota&model=Yaris",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"vw-polo-2020",make:"VW",model:"Polo",year:2020,price:13900,km:55000,length:4.05,trunk:351,fuel:"petrol",owners:2,type:"city",img:"🚙",siOrigin:false,tags:["small","popular"],link:"https://www.avto.net/Ads/results.asp?znamka=Volkswagen&model=Polo",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"skoda-fabia-2022",make:"Škoda",model:"Fabia",year:2022,price:15200,km:22000,length:4.11,trunk:380,fuel:"petrol",owners:1,type:"city",img:"🚗",siOrigin:true,tags:["small","value","reliable","1. lastnik","🇸🇮 SI poreklo"],link:"https://www.avto.net/Ads/results.asp?znamka=Skoda&model=Fabia",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"renault-clio-2021",make:"Renault",model:"Clio",year:2021,price:13000,km:48000,length:4.05,trunk:391,fuel:"petrol",owners:1,type:"city",img:"🚗",siOrigin:false,tags:["small","value","stylish"],link:"https://www.avto.net/Ads/results.asp?znamka=Renault&model=Clio",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"seat-ibiza-2021",make:"Seat",model:"Ibiza",year:2021,price:14000,km:41000,length:4.06,trunk:355,fuel:"petrol",owners:2,type:"city",img:"🚗",siOrigin:false,tags:["small","sporty"],link:"https://www.avto.net/Ads/results.asp?znamka=Seat&model=Ibiza",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"toyota-corolla-2021",make:"Toyota",model:"Corolla",year:2021,price:21000,km:29000,length:4.37,trunk:361,fuel:"hybrid",owners:1,type:"sedan",img:"🚘",siOrigin:true,tags:["reliable","eco","low-maintenance","1. lastnik","🇸🇮 SI poreklo"],link:"https://www.avto.net/Ads/results.asp?znamka=Toyota&model=Corolla",image:null,maintenance:{insurance:440,registration:90,service:220,total:750}},
+  {id:"vw-golf-2020",make:"VW",model:"Golf",year:2020,price:19500,km:62000,length:4.28,trunk:380,fuel:"petrol",owners:2,type:"sedan",img:"🚘",siOrigin:false,tags:["popular","practical"],link:"https://www.avto.net/Ads/results.asp?znamka=Volkswagen&model=Golf",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"honda-civic-2021",make:"Honda",model:"Civic",year:2021,price:23000,km:31000,length:4.55,trunk:519,fuel:"hybrid",owners:1,type:"sedan",img:"🚘",siOrigin:false,tags:["reliable","eco","low-maintenance"],link:"https://www.avto.net/Ads/results.asp?znamka=Honda&model=Civic",image:null,maintenance:{insurance:440,registration:90,service:220,total:750}},
+  {id:"bmw-3series-2019",make:"BMW",model:"3 Series",year:2019,price:28000,km:71000,length:4.71,trunk:480,fuel:"diesel",owners:2,type:"sedan",img:"🏎️",siOrigin:false,tags:["performance","premium"],link:"https://www.avto.net/Ads/results.asp?znamka=BMW&model=3+serija",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"mercedes-c-2019",make:"Mercedes",model:"C-Class",year:2019,price:31000,km:68000,length:4.69,trunk:455,fuel:"diesel",owners:2,type:"sedan",img:"🏎️",siOrigin:false,tags:["premium","comfort"],link:"https://www.avto.net/Ads/results.asp?znamka=Mercedes-Benz&model=C",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"skoda-octavia-2021",make:"Škoda",model:"Octavia Combi",year:2021,price:22000,km:34000,length:4.69,trunk:640,fuel:"diesel",owners:1,type:"wagon",img:"🚐",siOrigin:true,tags:["practical","family","large-trunk","value","1. lastnik","🇸🇮 SI poreklo"],link:"https://www.avto.net/Ads/results.asp?znamka=Skoda&model=Octavia+Combi",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"vw-passat-2020",make:"VW",model:"Passat Variant",year:2020,price:25000,km:59000,length:4.77,trunk:650,fuel:"diesel",owners:2,type:"wagon",img:"🚐",siOrigin:false,tags:["family","large-trunk","comfort"],link:"https://www.avto.net/Ads/results.asp?znamka=Volkswagen&model=Passat+Variant",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"volvo-v60-2020",make:"Volvo",model:"V60",year:2020,price:34000,km:45000,length:4.76,trunk:529,fuel:"diesel",owners:1,type:"wagon",img:"🚐",siOrigin:false,tags:["safety","premium","family"],link:"https://www.avto.net/Ads/results.asp?znamka=Volvo&model=V60",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"peugeot-308sw-2022",make:"Peugeot",model:"308 SW",year:2022,price:24000,km:19000,length:4.64,trunk:608,fuel:"diesel",owners:1,type:"wagon",img:"🚐",siOrigin:false,tags:["stylish","family","large-trunk"],link:"https://www.avto.net/Ads/results.asp?znamka=Peugeot&model=308",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"toyota-rav4-2021",make:"Toyota",model:"RAV4",year:2021,price:33000,km:28000,length:4.60,trunk:580,fuel:"hybrid",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["reliable","eco","family","large-trunk"],link:"https://www.avto.net/Ads/results.asp?znamka=Toyota&model=RAV4",image:null,maintenance:{insurance:440,registration:90,service:220,total:750}},
+  {id:"skoda-kodiaq-2020",make:"Škoda",model:"Kodiaq",year:2020,price:29000,km:52000,length:4.70,trunk:720,fuel:"diesel",owners:2,type:"suv",img:"🛻",siOrigin:true,tags:["family","large-trunk","value","🇸🇮 SI poreklo"],link:"https://www.avto.net/Ads/results.asp?znamka=Skoda&model=Kodiaq",image:null,maintenance:{insurance:390,registration:130,service:310,total:830}},
+  {id:"dacia-duster-2022",make:"Dacia",model:"Duster",year:2022,price:18500,km:21000,length:4.34,trunk:445,fuel:"petrol",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["value","rugged","large-trunk"],link:"https://www.avto.net/Ads/results.asp?znamka=Dacia&model=Duster",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"ford-puma-2021",make:"Ford",model:"Puma",year:2021,price:20000,km:37000,length:4.19,trunk:456,fuel:"petrol",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["compact","practical","large-trunk"],link:"https://www.avto.net/Ads/results.asp?znamka=Ford&model=Puma",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+  {id:"hyundai-tucson-2022",make:"Hyundai",model:"Tucson",year:2022,price:30000,km:18000,length:4.50,trunk:539,fuel:"hybrid",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["eco","family","modern"],link:"https://www.avto.net/Ads/results.asp?znamka=Hyundai&model=Tucson",image:null,maintenance:{insurance:440,registration:90,service:220,total:750}},
+  {id:"mazda-cx5-2021",make:"Mazda",model:"CX-5",year:2021,price:31000,km:33000,length:4.55,trunk:506,fuel:"petrol",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["premium","reliable","stylish"],link:"https://www.avto.net/Ads/results.asp?znamka=Mazda&model=CX-5",image:null,maintenance:{insurance:420,registration:110,service:280,total:810}},
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// QUIZ CONFIG
+// ═══════════════════════════════════════════════════════════════════
+const VIBES = [
+  {type:"suv",   label:"SUV / Jeep",    icon:"🛻", desc:"Rugged. Goes anywhere."},
+  {type:"sedan", label:"Sedan / Hatch", icon:"🚘", desc:"Sleek. City to highway."},
+  {type:"city",  label:"City Car",      icon:"🚗", desc:"Tiny. Park anywhere."},
+  {type:"wagon", label:"Karavan",       icon:"🚐", desc:"Practical. Loads of space."},
+];
+const QUESTIONS = [
+  {key:"fuelMatters",      yes:"Da, prihrani mi denar",    no:"Ne, všeč mi je bencin",    q:"Ali te skrbijo stroški goriva?",  icon:"⛽"},
+  {key:"parkingNightmare", yes:"Da, parkiranje je pekel",  no:"Ne, imam dovolj prostora",  q:"Je parkiranje nočna mora?",       icon:"🅿️"},
+  {key:"bigFamily",        yes:"Da, pes/otroci vključeni", no:"Ne, samo jaz",              q:"Potrebuješ velik prtljažnik?",    icon:"🐕"},
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let DB = [];          // loaded car data
+let liked = JSON.parse(localStorage.getItem('am-liked') || '[]');
+
+let S = {
+  step:0, qIdx:0,
+  type:null, fuelMatters:false, parkingNightmare:false, bigFamily:false,
+  maxPrice:30000, minYear:2018, antiLemon:false, siOnly:false,
+  results:[], cardIndex:0,
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// LOAD DATA
+// ═══════════════════════════════════════════════════════════════════
+async function loadData() {
+  const notice = document.getElementById('dataNotice');
+  const noticeTxt = document.getElementById('dataNoticeText');
+  notice.style.display = 'flex';
+
+  try {
+    const res = await fetch('cars.json');
+    if (!res.ok) throw new Error('not found');
+    const json = await res.json();
+    DB = json.cars || json;
+    const age = json.scrapedAt ? new Date(json.scrapedAt) : null;
+    const ageStr = age ? `Podatki od ${age.toLocaleDateString('sl-SI')}` : 'Lokalni podatki';
+    noticeTxt.textContent = `✓ ${DB.length} avtomobilov naloženih · ${ageStr}`;
+    notice.style.background = 'rgba(0,230,118,.06)';
+    notice.style.borderBottomColor = 'rgba(0,230,118,.2)';
+    notice.querySelector('.dn-dot').style.background = 'var(--green)';
+    notice.querySelector('.dn-dot').style.animation = 'none';
+    notice.querySelector('.dn-txt').style.color = 'rgba(0,230,118,.8)';
+  } catch {
+    DB = FALLBACK_CARS;
+    noticeTxt.textContent = `⚠ Demo podatki (${DB.length} avtov) · Zaženi scraper.js za prave oglase`;
+    setTimeout(() => { notice.style.display = 'none'; }, 5000);
+  }
+
+  // Check for shared prefs in URL
+  loadFromURL();
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// URL SHARE
+// ═══════════════════════════════════════════════════════════════════
+function buildShareURL() {
+  const p = new URLSearchParams({
+    t: S.type||'',
+    fm: S.fuelMatters?1:0,
+    pn: S.parkingNightmare?1:0,
+    bf: S.bigFamily?1:0,
+    mp: S.maxPrice,
+    my: S.minYear,
+    al: S.antiLemon?1:0,
+    si: S.siOnly?1:0,
+  });
+  return `${location.origin}${location.pathname}?${p.toString()}`;
+}
+
+function loadFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (!p.get('t')) return;
+  S.type             = p.get('t') || null;
+  S.fuelMatters      = p.get('fm') === '1';
+  S.parkingNightmare = p.get('pn') === '1';
+  S.bigFamily        = p.get('bf') === '1';
+  S.maxPrice         = parseInt(p.get('mp')) || 30000;
+  S.minYear          = parseInt(p.get('my')) || 2018;
+  S.antiLemon        = p.get('al') === '1';
+  S.siOnly           = p.get('si') === '1';
+  // jump to results
+  computeResults();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SCORING
+// ═══════════════════════════════════════════════════════════════════
+function scoreCar(car) {
+  let s = 0;
+  if (car.type === S.type) s += 20;
+  if (S.fuelMatters && ['diesel','hybrid','lpg','electric'].includes(car.fuel)) s += 15;
+  if (S.parkingNightmare && car.length < 4.2) s += 15;
+  if (S.bigFamily && car.trunk > 450) s += 15;
+  if (car.price <= S.maxPrice) s += 10;
+  if (car.year >= S.minYear) s += 10;
+  if (S.antiLemon && car.owners > 3) s -= 30;
+  if (S.siOnly && !car.siOrigin) return -1;
+  if (['Toyota','Honda','Mazda','Subaru'].includes(car.make)) s += 5;
+  if (car.owners === 1) s += 5;
+  if (car.siOrigin) s += 3;
+  return s;
+}
+
+function computeResults() {
+  S.results = DB
+    .map(c => ({...c, score: scoreCar(c)}))
+    .filter(c => c.score >= 0)
+    .sort((a,b) => b.score - a.score)
+    .slice(0, 8);
+  S.cardIndex = 0;
+  S.step = 3;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PAGES
+// ═══════════════════════════════════════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(p+'Page').classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  if (p === 'lib') renderLib();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════════════════════════
+function setProgress(step) {
+  [0,1,2,3].forEach(i => {
+    document.getElementById('pb'+i).className = 'pb-line'+(i<=step?' on':'');
+    document.getElementById('pt'+i).className = 'pb-txt'+(i<=step?' on':'');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TRANSITIONS
+// ═══════════════════════════════════════════════════════════════════
+function go(fn) {
+  const v = document.getElementById('quizView');
+  v.classList.add('fade');
+  setTimeout(() => { fn(); v.classList.remove('fade'); }, 270);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER ROUTER
+// ═══════════════════════════════════════════════════════════════════
+function render() {
+  setProgress(S.step);
+  switch(S.step) {
+    case 0: renderVibe(); break;
+    case 1: renderQ(); break;
+    case 2: renderBudget(); break;
+    case 3: renderResults(); break;
+  }
+}
+
+// ─── VIBE ────────────────────────────────────────────────────────────────────
+function renderVibe() {
+  document.getElementById('quizView').innerHTML = `
+    <div style="width:100%">
+      <h1 class="vibe-h">KATERI<br/><em>AVTO TE</em><br/>OPISUJE?</h1>
+      <p class="vibe-sub">TAPNI SVOJO VIBE</p>
+      <div class="vibe-grid">
+        ${VIBES.map(v => `
+          <div class="vibe-card" onclick="selectVibe('${v.type}')">
+            <div class="vibe-icon">${v.icon}</div>
+            <div>
+              <div class="vibe-name">${v.label}</div>
+              <div class="vibe-desc">${v.desc}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function selectVibe(t) {
+  S.type = t;
+  go(() => { S.step = 1; render(); });
+}
+
+// ─── QUESTION ────────────────────────────────────────────────────────────────
+function renderQ() {
+  const q = QUESTIONS[S.qIdx];
+  document.getElementById('quizView').innerHTML = `
+    <div style="width:100%;text-align:center;display:flex;flex-direction:column;align-items:center">
+      <div class="q-num">VPRAŠANJE ${S.qIdx+1} / ${QUESTIONS.length}</div>
+      <div class="q-icon">${q.icon}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-btns">
+        <button class="btn-y" onclick="answerQ(true)">👍 ${q.yes}</button>
+        <button class="btn-n" onclick="answerQ(false)">👎 ${q.no}</button>
+      </div>
+    </div>`;
+}
+
+function answerQ(val) {
+  S[QUESTIONS[S.qIdx].key] = val;
+  if (S.qIdx < QUESTIONS.length - 1) {
+    go(() => { S.qIdx++; render(); });
+  } else {
+    go(() => { S.step = 2; render(); });
+  }
+}
+
+// ─── BUDGET ──────────────────────────────────────────────────────────────────
+function renderBudget() {
+  document.getElementById('quizView').innerHTML = `
+    <div style="width:100%">
+      <h2 class="budget-h">REALITY<br/><em>CHECK</em></h2>
+      <p class="budget-sub">NASTAVI SVOJE MEJE</p>
+
+      <div class="s-card">
+        <div class="s-row">
+          <span class="s-lbl">MAX CENA</span>
+          <span class="s-val" id="pv">€${S.maxPrice.toLocaleString()}</span>
+        </div>
+        <input type="range" min="3000" max="80000" step="500" value="${S.maxPrice}"
+          oninput="S.maxPrice=+this.value;document.getElementById('pv').textContent='€'+S.maxPrice.toLocaleString()"/>
+        <div class="s-mm"><span>€3,000</span><span>€80,000</span></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-row">
+          <span class="s-lbl">MIN LETNIK</span>
+          <span class="s-val" id="yv">${S.minYear}</span>
+        </div>
+        <input type="range" min="2010" max="2024" step="1" value="${S.minYear}"
+          oninput="S.minYear=+this.value;document.getElementById('yv').textContent=S.minYear"/>
+        <div class="s-mm"><span>2010</span><span>2024</span></div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-title">🍋 ANTI-LEMON</div>
+          <div class="t-sub">Filtriraj avte z 3+ lastniki</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="cb-lemon" ${S.antiLemon?'checked':''} onchange="S.antiLemon=this.checked"/>
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="t-title">🇸🇮 SLOVENSKO POREKLO</div>
+          <div class="t-sub">Samo avtomobili s slovenskim poreklom</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="cb-si" ${S.siOnly?'checked':''} onchange="S.siOnly=this.checked"/>
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+      <button class="btn-go" onclick="doCompute()">POIŠČI MOJ AVTO 🚗</button>
+    </div>`;
+}
+
+function doCompute() {
+  computeResults();
+  go(() => render());
+}
+
+// ─── RESULTS ─────────────────────────────────────────────────────────────────
+function renderResults() {
+  const shareURL = buildShareURL();
+  const v = document.getElementById('quizView');
+
+  if (!S.results.length) {
+    v.innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:64px">😢</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--muted);margin-top:16px">NI REZULTATOV</h3>
+        <p style="font-size:12px;color:var(--dim);margin-top:10px;line-height:1.7">Poskusi z višjo ceno, starejšim letnikom<br/>ali izklopi "Slovensko poreklo" filter.</p>
+        <button class="btn-restart" onclick="restart()" style="margin-top:24px">↩ ZAČNI ZNOVA</button>
+      </div>`;
+    return;
+  }
+
+  v.innerHTML = `
+    <div style="width:100%;display:flex;flex-direction:column;align-items:center">
+      <h2 class="results-h">TVOJI<br/><em>UJEMI</em></h2>
+      <p class="results-sub">POVLECI ← PRESKOČI &nbsp;·&nbsp; → VŠEČ MI JE</p>
+      <div class="card-stack" id="cardStack"></div>
+      <p class="hint">Povleci kartico ali pritisni gumb 💚</p>
+      <div class="share-bar">
+        <span class="share-url" id="shareUrl">${shareURL}</span>
+        <button class="btn-copy" id="copyBtn" onclick="copyShare()">KOPIRAJ</button>
+      </div>
+      <button class="btn-restart" onclick="restart()">↩ ZAČNI ZNOVA</button>
+    </div>`;
+
+  renderCards();
+}
+
+function renderCards() {
+  const stack = document.getElementById('cardStack');
+  if (!stack) return;
+  stack.innerHTML = '';
+
+  const visible = S.results.slice(S.cardIndex, S.cardIndex + 3);
+  if (!visible.length) {
+    stack.innerHTML = `
+      <div style="text-align:center;padding:80px 20px">
+        <div style="font-size:64px">🎉</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--muted);margin-top:16px">VSE SI VIDEL!</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px;font-family:'DM Mono',monospace">Preveri shranjene avte →</div>
+      </div>`;
+    return;
+  }
+
+  for (let i = visible.length - 1; i >= 0; i--) {
+    const car = visible[i];
+    const isTop = i === 0;
+    const offset = i * 7;
+    const scale  = 1 - i * 0.04;
+    const el = buildCard(car, S.cardIndex + i, isTop, offset, scale);
+    stack.appendChild(el);
+    if (isTop) initDrag(el, car);
+  }
+}
+
+function buildCard(car, rank, isTop, offsetY, scale) {
+  const el = document.createElement('div');
+  el.className = 'car-card';
+  el.style.cssText = `z-index:${10-rank+S.cardIndex};transform:translateY(${offsetY}px) scale(${scale});transition:transform .3s,opacity .3s;${!isTop?'pointer-events:none;cursor:default;':''}`;
+
+  const isLiked = liked.some(l => l.id === car.id);
+  const maint   = car.maintenance || {insurance:420,registration:110,service:280,total:810};
+
+  el.innerHTML = `
+    <div class="badge-like" id="bl-${car.id}">LIKE 💚</div>
+    <div class="badge-nope" id="bn-${car.id}">SKIP ❌</div>
+
+    <div class="cc-img">
+      ${car.image ? `<img src="${car.image}" alt="${car.make} ${car.model}" loading="lazy"/>` : ''}
+      <div class="cc-img-fallback">${car.img||'🚗'}</div>
+      ${car.siOrigin ? '<div class="si-badge">🇸🇮 Slovensko poreklo</div>' : ''}
+    </div>
+
+    <div class="cc-body">
+      <div class="cc-rank">#${rank+1} MATCH</div>
+      <div class="cc-make">${car.make}</div>
+      <div class="cc-model">${car.model}</div>
+      <div class="cc-price">€${car.price.toLocaleString()} <small>/ ${car.year} · ${(car.km||0).toLocaleString()} km</small></div>
+    </div>
+
+    <div class="cc-specs">
+      <div class="spec"><div class="spec-lbl">⛽ Gorivo</div><div class="spec-val">${car.fuel.toUpperCase()}</div></div>
+      <div class="spec"><div class="spec-lbl">📏 Dolžina</div><div class="spec-val">${car.length}m</div></div>
+      <div class="spec"><div class="spec-lbl">🧳 Prtljažnik</div><div class="spec-val">${car.trunk}L</div></div>
+      <div class="spec"><div class="spec-lbl">👤 Lastniki</div><div class="spec-val">${car.owners} ${car.owners===1?'lastnik':'lastniki'}</div></div>
+    </div>
+
+    <div class="cc-maint">
+      <div class="maint-title">💶 LETNI STROŠKI (OCENA)</div>
+      <div class="maint-row">
+        <div class="maint-item"><div class="mi-val">€${maint.insurance}</div><div class="mi-lbl">Zavarovanje</div></div>
+        <div class="maint-item"><div class="mi-val">€${maint.registration}</div><div class="mi-lbl">Registracija</div></div>
+        <div class="maint-item"><div class="mi-val">€${maint.service}</div><div class="mi-lbl">Servis</div></div>
+        <div class="maint-item"><div class="mi-val" style="color:var(--accent)">€${maint.total}</div><div class="mi-lbl">SKUPAJ</div></div>
+      </div>
+    </div>
+
+    <div class="cc-tags">
+      ${car.tags.map(t => `<span class="tag ${t.includes('🇸🇮')||t.includes('lastnik')?'green':''}">${t}</span>`).join('')}
+    </div>
+
+    <div class="cc-actions">
+      <a class="cc-link" href="${car.link}" target="_blank" rel="noreferrer">POGLEJ NA AVTO.NET →</a>
+      <button class="cc-like-btn" id="lbtn-${car.id}" onclick="toggleLike(event,'${car.id}')" title="Shrani">
+        ${isLiked ? '💚' : '🤍'}
+      </button>
+    </div>`;
+
+  return el;
+}
+
+// ─── DRAG ────────────────────────────────────────────────────────────────────
+function initDrag(card, car) {
+  let sx=0, sy=0, dragging=false, cx=0;
+  const bl = () => document.getElementById('bl-'+car.id);
+  const bn = () => document.getElementById('bn-'+car.id);
+
+  const gx = e => e.touches ? e.touches[0].clientX : e.clientX;
+
+  function start(e) { sx=gx(e); dragging=true; card.style.transition='none'; }
+  function move(e) {
+    if (!dragging) return;
+    cx = gx(e) - sx;
+    if (Math.abs(cx) > 8) e.preventDefault && e.preventDefault();
+    const rot = cx/18, op = 1 - Math.abs(cx)/320;
+    card.style.transform = `translateX(${cx}px) rotate(${rot}deg)`;
+    card.style.opacity = op;
+    if (bl()) bl().style.opacity = cx>40 ? Math.min((cx-40)/60,1) : 0;
+    if (bn()) bn().style.opacity = cx<-40 ? Math.min((-cx-40)/60,1) : 0;
+  }
+  function end() {
+    if (!dragging) return; dragging=false;
+    card.style.transition = 'transform .35s cubic-bezier(.2,.9,.3,1), opacity .35s';
+    if (Math.abs(cx) > 100) {
+      if (cx > 0) likeCard(car);
+      card.style.transform = `translateX(${cx>0?520:-520}px) rotate(${cx>0?28:-28}deg)`;
+      card.style.opacity = '0';
+      setTimeout(() => { S.cardIndex++; renderCards(); }, 360);
+    } else {
+      card.style.transform = 'translateX(0) rotate(0deg)';
+      card.style.opacity = '1';
+      if (bl()) bl().style.opacity = '0';
+      if (bn()) bn().style.opacity = '0';
+    }
+    cx = 0;
+  }
+
+  card.addEventListener('mousedown', start);
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  card.addEventListener('touchstart', start, {passive:true});
+  card.addEventListener('touchmove', move, {passive:false});
+  card.addEventListener('touchend', end);
+}
+
+// ─── LIKE ─────────────────────────────────────────────────────────────────────
+function likeCard(car) {
+  if (!liked.some(l => l.id === car.id)) {
+    liked.push(car);
+    saveLiked();
+  }
+}
+
+function toggleLike(e, carId) {
+  e.stopPropagation();
+  const car = S.results.find(c => c.id === carId) || DB.find(c => c.id === carId);
+  if (!car) return;
+  const idx = liked.findIndex(l => l.id === carId);
+  if (idx === -1) {
+    liked.push(car);
+    document.getElementById('lbtn-'+carId).textContent = '💚';
+  } else {
+    liked.splice(idx, 1);
+    document.getElementById('lbtn-'+carId).textContent = '🤍';
+  }
+  saveLiked();
+}
+
+function saveLiked() {
+  localStorage.setItem('am-liked', JSON.stringify(liked));
+  updateBadge();
+}
+
+function updateBadge() {
+  const b = document.getElementById('libBadge');
+  b.textContent = liked.length;
+  b.style.display = liked.length > 0 ? 'flex' : 'none';
+}
+
+// ─── SHARE ────────────────────────────────────────────────────────────────────
+function copyShare() {
+  const url = buildShareURL();
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copyBtn');
+    if (btn) { btn.textContent = '✓ KOPIRANO'; btn.classList.add('copied'); }
+    setTimeout(() => {
+      const b2 = document.getElementById('copyBtn');
+      if (b2) { b2.textContent = 'KOPIRAJ'; b2.classList.remove('copied'); }
+    }, 2500);
+  }).catch(() => {
+    prompt('Kopiraj to povezavo:', buildShareURL());
+  });
+}
+
+// ─── LIBRARY ─────────────────────────────────────────────────────────────────
+function renderLib() {
+  const el = document.getElementById('libContent');
+  if (!liked.length) {
+    el.innerHTML = `
+      <div class="lib-empty">
+        <div class="le-icon">🤍</div>
+        <div class="le-title">ZAENKRAT NIČ</div>
+        <div class="le-sub">Med iskanjem pritisni 💚 ali povleci desno,<br/>da shraniš avto za pozneje.</div>
+      </div>`;
+    return;
+  }
+
+  const totalAvg = Math.round(liked.reduce((a,c) => a + (c.maintenance?.total||800), 0) / liked.length);
+
+  el.innerHTML = `
+    <div class="lib-grid">
+      ${liked.map((car,i) => {
+        const m = car.maintenance || {insurance:420,registration:110,service:280,total:810};
+        return `
+        <div class="lib-card" id="lc-${car.id}">
+          <div class="lib-img">
+            ${car.image ? `<img src="${car.image}" alt="${car.make}" loading="lazy"/>` : ''}
+            <div class="lib-img-fb">${car.img||'🚗'}</div>
+          </div>
+          <div class="lib-info">
+            <div class="lib-make">${car.make}</div>
+            <div class="lib-model">${car.model}</div>
+            <div class="lib-price">€${car.price.toLocaleString()}</div>
+            <div class="lib-meta">${car.year} · ${(car.km||0).toLocaleString()} km · ${car.fuel.toUpperCase()}</div>
+            <div class="lib-tags">
+              ${car.siOrigin ? '<span class="lib-si">🇸🇮 SI poreklo</span>' : ''}
+              ${car.owners===1 ? '<span class="tag green" style="font-size:9px">1. lastnik</span>' : ''}
+              <span class="tag" style="font-size:9px">€${m.total}/leto</span>
+            </div>
+          </div>
+          <div class="lib-actions">
+            <a class="lib-link" href="${car.link}" target="_blank" rel="noreferrer">AVTO.NET</a>
+            <button class="lib-remove" onclick="removeLiked('${car.id}')">✕</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="maint-summary">
+      <h3>💶 STROŠKI VZDRŽEVANJA</h3>
+      ${liked.map(car => {
+        const m = car.maintenance || {insurance:420,registration:110,service:280,total:810};
+        return `
+        <div class="maint-total-row">
+          <span class="maint-total-label">${car.make} ${car.model} (${car.year})</span>
+          <span class="maint-total-val">€${m.total} / leto</span>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">Povprečje shranjenih</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent)">€${totalAvg} / LETO</span>
+      </div>
+    </div>
+
+    <button class="btn-restart" onclick="clearLiked()" style="width:100%;margin-top:0;color:var(--red);border-color:var(--red);opacity:.6">
+      ✕ POČISTI VSE SHRANJENE
+    </button>`;
+}
+
+function removeLiked(id) {
+  liked = liked.filter(l => l.id !== id);
+  saveLiked();
+  document.getElementById('lc-'+id)?.remove();
+  if (!liked.length) renderLib();
+  // re-render maint summary
+  else renderLib();
+}
+
+function clearLiked() {
+  if (!confirm('Počistiti vse shranjene avte?')) return;
+  liked = []; saveLiked(); renderLib();
+}
+
+// ─── RESTART ─────────────────────────────────────────────────────────────────
+function restart() {
+  S = {step:0,qIdx:0,type:null,fuelMatters:false,parkingNightmare:false,bigFamily:false,maxPrice:30000,minYear:2018,antiLemon:false,siOnly:false,results:[],cardIndex:0};
+  history.replaceState(null,'',location.pathname);
+  go(() => render());
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+updateBadge();
+loadData();
+</script>
+</body>
+</html>
