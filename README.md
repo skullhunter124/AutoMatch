@@ -68,6 +68,7 @@ automatch-si/
 - Add more car categories by editing `CATEGORIES` in `scraper.js`
 - Adjust scoring weights in the `scoreCar()` function in `index.html`
 - Add more model specs to `MODEL_SPECS` in `scraper.js`
+- Going live as an official website
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details
