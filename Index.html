@@ -374,15 +374,54 @@ input[type=range]::-webkit-slider-thumb{
 .maint-total-label{font-size:12px;color:var(--muted)}
 .maint-total-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:700}
 
-/* ── DATA STATUS ── */
-.data-notice{
-  width:100%;max-width:460px;padding:10px 20px;
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,215,64,.06);border-bottom:1px solid rgba(255,215,64,.15);
+/* ── SCRAPE STATUS BAR (non-blocking, sits under nav) ── */
+#scrapeBar{
+  position:sticky;top:58px;z-index:90;
+  width:100%;display:none;
+  background:rgba(3,9,15,.95);border-bottom:1px solid var(--border);
+  flex-direction:column;
 }
-.dn-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:pulse 2s infinite}
-.dn-txt{font-size:10px;color:rgba(255,215,64,.7);font-family:'DM Mono',monospace;letter-spacing:.5px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#scrapeBar.show{display:flex}
+.sb-top{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;
+}
+.sb-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  background:var(--gold);animation:pulse 1.5s infinite;
+}
+.sb-dot.done{background:var(--green);animation:none}
+.sb-dot.err{background:var(--red);animation:none}
+.sb-label{
+  font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);
+  flex:1;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sb-pct{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--accent);
+  flex-shrink:0;min-width:36px;text-align:right;
+}
+.sb-toggle{
+  background:none;border:none;color:var(--dim);font-size:11px;
+  cursor:pointer;padding:0 4px;flex-shrink:0;
+}
+.sb-progress{height:2px;background:var(--border);width:100%}
+.sb-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width .5s;
+}
+/* expandable log */
+.sb-log{
+  display:none;max-height:140px;overflow-y:auto;
+  padding:8px 20px 10px;
+  font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);
+  line-height:1.8;border-top:1px solid var(--border);
+}
+.sb-log.open{display:block}
+.sb-log .ok{color:var(--green)}
+.sb-log .err{color:var(--red)}
+.sb-log .info{color:var(--accent)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── LOADING ── */
 .loading{
@@ -412,12 +451,21 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </nav>
 
+<!-- SCRAPE STATUS BAR — non-blocking, user can use the quiz while this runs -->
+<div id="scrapeBar">
+  <div class="sb-top">
+    <div class="sb-dot" id="sbDot"></div>
+    <span class="sb-label" id="sbLabel">Nalagam podatke iz avto.net...</span>
+    <span class="sb-pct" id="sbPct">0%</span>
+    <button class="sb-toggle" id="sbToggle" onclick="toggleLog()" title="Prikaži log">▾</button>
+  </div>
+  <div class="sb-progress"><div class="sb-fill" id="sbFill"></div></div>
+  <div class="sb-log" id="sbLog"></div>
+</div>
+
 <!-- QUIZ PAGE -->
 <div class="page active" id="quizPage">
-  <div id="dataNotice" class="data-notice" style="display:none">
-    <div class="dn-dot"></div>
-    <span class="dn-txt" id="dataNoticeText">Nalagam podatke...</span>
-  </div>
+  <div id="dataNotice" style="display:none"></div>
   <div id="progressBar">
     <div class="pb-item"><div class="pb-line on" id="pb0"></div><div class="pb-txt on" id="pt0">VIBE</div></div>
     <div class="pb-item"><div class="pb-line" id="pb1"></div><div class="pb-txt" id="pt1">FILTER</div></div>
@@ -492,35 +540,138 @@ let S = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// LOAD DATA
+// DATA LOADING  — background scrape while user does quiz
 // ═══════════════════════════════════════════════════════════════════
-async function loadData() {
-  const notice = document.getElementById('dataNotice');
-  const noticeTxt = document.getElementById('dataNoticeText');
-  notice.style.display = 'flex';
+let _sse   = null;
+let _scrapeActive = false;
 
-  try {
-    const res = await fetch('cars.json');
-    if (!res.ok) throw new Error('not found');
-    const json = await res.json();
-    DB = json.cars || json;
-    const age = json.scrapedAt ? new Date(json.scrapedAt) : null;
-    const ageStr = age ? `Podatki od ${age.toLocaleDateString('sl-SI')}` : 'Lokalni podatki';
-    noticeTxt.textContent = `✓ ${DB.length} avtomobilov naloženih · ${ageStr}`;
-    notice.style.background = 'rgba(0,230,118,.06)';
-    notice.style.borderBottomColor = 'rgba(0,230,118,.2)';
-    notice.querySelector('.dn-dot').style.background = 'var(--green)';
-    notice.querySelector('.dn-dot').style.animation = 'none';
-    notice.querySelector('.dn-txt').style.color = 'rgba(0,230,118,.8)';
-  } catch {
-    DB = FALLBACK_CARS;
-    noticeTxt.textContent = `⚠ Demo podatki (${DB.length} avtov) · Zaženi scraper.js za prave oglase`;
-    setTimeout(() => { notice.style.display = 'none'; }, 5000);
-  }
+// ── scrape bar helpers ───────────────────────────────────────────
+function sbShow(){ document.getElementById('scrapeBar').classList.add('show') }
+function sbHide(){ document.getElementById('scrapeBar').classList.remove('show') }
+function sbSet(pct, label, state){
+  document.getElementById('sbFill').style.width  = pct + '%';
+  document.getElementById('sbLabel').textContent = label;
+  document.getElementById('sbPct').textContent   = Math.round(pct) + '%';
+  const dot = document.getElementById('sbDot');
+  dot.className = 'sb-dot' + (state === 'done' ? ' done' : state === 'err' ? ' err' : '');
+}
+function sbLog(msg, cls){
+  const el = document.getElementById('sbLog');
+  if (!el) return;
+  const d = document.createElement('div');
+  if (cls) d.className = cls;
+  d.textContent = msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+function toggleLog(){
+  const log = document.getElementById('sbLog');
+  const btn = document.getElementById('sbToggle');
+  log.classList.toggle('open');
+  btn.textContent = log.classList.contains('open') ? '▴' : '▾';
+}
 
-  // Check for shared prefs in URL
+// ── load cars.json from server ───────────────────────────────────
+async function loadCarsJson(){
+  const res = await fetch('/cars.json?' + Date.now());
+  if (!res.ok) throw new Error('no cars.json');
+  const data = await res.json();
+  const cars = data.cars || data;
+  if (!cars || !cars.length) throw new Error('empty');
+  DB = cars;
+}
+
+// ── connect to SSE progress stream ──────────────────────────────
+function startProgressStream(){
+  if (_sse) return;
+  _sse = new EventSource('/api/progress');
+
+  _sse.onmessage = (e) => {
+    let msg;
+    try { msg = JSON.parse(e.data); } catch { return; }
+
+    if (msg.type === 'progress'){
+      sbSet(msg.pct, msg.label, msg.pct >= 100 ? 'done' : '');
+    }
+    if (msg.type === 'log'){
+      sbLog(msg.t, msg.c);
+    }
+    if (msg.type === 'done'){
+      _scrapeActive = false;
+      _sse.close(); _sse = null;
+      if (msg.total > 0){
+        // reload fresh data silently — if user is on results, re-render
+        loadCarsJson().then(() => {
+          sbSet(100, `Naloženih ${msg.total} avtomobilov`, 'done');
+          setTimeout(() => sbHide(), 3000);
+          // if user already computed results with fallback data, redo them
+          if (S.step === 3 && DB.length > FALLBACK_CARS.length){
+            computeResults();
+            renderResults();
+          }
+        }).catch(() => {});
+      } else {
+        sbSet(100, 'Ni podatkov — preverite internet', 'err');
+        setTimeout(() => sbHide(), 6000);
+        if (!DB.length) DB = FALLBACK_CARS;
+      }
+    }
+  };
+
+  _sse.onerror = () => {
+    if (_sse) { _sse.close(); _sse = null; }
+    _scrapeActive = false;
+  };
+}
+
+// ── main entry point ─────────────────────────────────────────────
+async function loadData(){
+  // always start rendering immediately with fallback so app is usable instantly
+  DB = FALLBACK_CARS;
   loadFromURL();
   render();
+
+  // check if server.py is running
+  let serverUp = false;
+  let isFresh  = false;
+  try {
+    const r = await fetch('/api/status', { signal: AbortSignal.timeout(1500) });
+    if (r.ok){
+      const s = await r.json();
+      serverUp = true;
+      isFresh  = s.fresh;
+      _scrapeActive = s.running;
+    }
+  } catch { /* no server */ }
+
+  if (!serverUp){
+    // double-click mode — try loading a local cars.json, else keep fallback
+    try {
+      await loadCarsJson();
+      // if we're on results screen (shared URL), re-run with fresh data
+      if (S.step === 3) { computeResults(); renderResults(); }
+    } catch { /* keep fallback — no notice needed */ }
+    return;
+  }
+
+  if (isFresh){
+    // data is good — load silently, no bar
+    try { await loadCarsJson(); } catch { }
+    if (S.step === 3) { computeResults(); renderResults(); }
+    return;
+  }
+
+  // scraper is running (started automatically when server.py launched)
+  sbShow();
+  sbSet(_scrapeActive ? 5 : 0, 'Nalagam avto.net podatke...', '');
+  startProgressStream();
+
+  // also try to load any existing (possibly stale) cars.json immediately
+  // so user gets some data even before scrape finishes
+  try {
+    await loadCarsJson();
+    if (S.step === 3) { computeResults(); renderResults(); }
+  } catch { /* keep fallback */ }
 }
 
 // ═══════════════════════════════════════════════════════════════════
