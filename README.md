@@ -18,9 +18,18 @@ Results: Swipe through a curated stack of matched cars, view details, and save y
 
 All matching logic, scoring algorithms, and UI state management are handled client-side.
 
-## Run with a local server (Python)
+## How to run it
 
 ```bash
+# Create the environment
+python -m venv venv
+
+# Activate it
+.\venv\Scripts\activate
+
+# Install the requirements
+pip install -r requirements.txt
+
 python -m http.server
 ```
 
