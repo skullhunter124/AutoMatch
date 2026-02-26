@@ -492,10 +492,6 @@ input[type=range]::-webkit-slider-thumb{
 // ═══════════════════════════════════════════════════════════════════
 // FALLBACK DATA (used when cars.json not found / no server)
 // ═══════════════════════════════════════════════════════════════════
-
-
-
-
 const FALLBACK_CARS = [
   // --- 🏙️ CITY CARS (Mestni avtomobili) ---
   {id:"toyota-yaris-2021",make:"Toyota",model:"Yaris",year:2021,price:15800,km:42000,length:3.94,trunk:286,fuel:"petrol",owners:1,type:"city",img:"🚗",siOrigin:true,tags:["reliable","hybrid-available","low-depreciation"],link:"https://www.avto.net/Ads/results.asp?znamka=Toyota&model=Yaris&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=101000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:450,registration:106,service:250,total:806}},
@@ -530,8 +526,6 @@ const FALLBACK_CARS = [
   {id:"mercedes-c-2017",make:"Mercedes",model:"C-Class",year:2017,price:27000,km:85000,length:4.69,trunk:480,fuel:"diesel",owners:2,type:"sedan",img:"🚀",siOrigin:false,tags:["luxury","performance"],link:"https://www.avto.net/Ads/results.asp?znamka=Mercedes%2DBenz&model=C-Razred&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2017&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=101000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1012000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:700,registration:154,service:500,total:1354}},
   {id:"audi-a1-2019",make:"Audi",model:"A1",year:2019,price:20000,km:40000,length:4.03,trunk:335,fuel:"diesel",owners:1,type:"sedan",img:"💍",siOrigin:false,tags:["premium","compact"],link:"https://www.avto.net/Ads/results.asp?znamka=Audi&model=A1&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2019&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=101000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1012000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:500,registration:110,service:300,total:910}},
   {id:"audi-a7-2018",make:"Audi",model:"A7",year:2018,price:38000,km:70000,length:4.97,trunk:535,fuel:"diesel",owners:2,type:"sedan",img:"🚀",siOrigin:false,tags:["luxury","space"],link:"https://www.avto.net/Ads/results.asp?znamka=Audi&model=A7&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2018&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=101000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1012000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:850,registration:154,service:550,total:1554}},
-  
-
 
   // --- 🚐 WAGONS (Karavani) ---
   {id:"skoda-octavia-2021",make:"Škoda",model:"Octavia Combi",year:2021,price:23500,km:55000,length:4.69,trunk:640,fuel:"diesel",owners:1,type:"wagon",img:"🚐",siOrigin:true,tags:["space","family-favorite"],link:"https://www.avto.net/Ads/results.asp?znamka=%8Akoda&model=Octavia&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=0&paketgarancije=&broker=0&prikazkategorije=0&kategorija=0&ONLvid=0&ONLnak=0&zaloga=10&arhiv=0&presort=3&tipsort=DESC&stran=1&subDESIGN=13",image:null,maintenance:{insurance:510,registration:154,service:380,total:1044}},
@@ -547,7 +541,7 @@ const FALLBACK_CARS = [
   {id:"ford-mondeo-2020",make:"Ford",model:"Mondeo Wagon",year:2020,price:19500,km:68000,length:4.87,trunk:525,fuel:"diesel",owners:2,type:"wagon",img:"🇺🇸",siOrigin:true,tags:["spacious","comfortable"],link:"https://www.avto.net/Ads/results.asp?znamka=Ford&model=Mondeo&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2020&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=1010000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:590,registration:108,service:360,total:1058}},
   {id:"vw-arteon-2021",make:"VW",model:"Arteon Shooting Brake",year:2021,price:32000,km:30000,length:4.87,trunk:565,fuel:"petrol",owners:1,type:"wagon",img:"🚀",siOrigin:false,tags:["stylish","performance"],link:"https://www.avto.net/Ads/results.asp?znamka=Volkswagen&model=&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=0&paketgarancije=&broker=0&prikazkategorije=0&kategorija=0&ONLvid=0&ONLnak=0&zaloga=10&arhiv=0&presort=3&tipsort=DESC&stran=1&SUBmodelsearch=Arteon%20Shooting%20Brake&SUBmodgrp1=0",image:null,maintenance:{insurance:690,registration:134,service:360,total:1184}},
   {id:"kia-optima-2017",make:"Kia",model:"Optima Sportswagon",year:2017,price:13500,km:90000,length:4.85,trunk:510,fuel:"hybrid",owners:2,type:"wagon",img:"🚗",siOrigin:true,tags:["value","hybrid"],link:"https://www.avto.net/Ads/results.asp?znamka=Kia&model=Optima&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2017&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=0&paketgarancije=&broker=0&prikazkategorije=0&kategorija=0&",image:null,maintenance:{insurance:595,registration:108,service:360,total:1063}},
-  {id:"peugeot-308sw-2022",make:"Peugeot",model:"308 SW",year:2022,price:19500,km:15000,length:4.64,trunk:610,fuel:"petrol",owners:1,type:"wagon",img:"🦁",siOrigin:false,tags:["stylish","practical"],link:"https://www.avto.net/Ads/results.asp?znamka=Peugeot&model=308&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2022&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zal",image:null,maintenance:{insurance:490,registration:108,service:320,total:918}},
+  {id:"peugeot-308sw-2022",make:"Peugeot",model:"308 SW",year:2022,price:19500,km:15000,length:4.64,trunk:610,fuel:"diesel",owners:1,type:"wagon",img:"🦁",siOrigin:false,tags:["stylish","practical"],link:"https://www.avto.net/Ads/results.asp?znamka=Peugeot&model=308&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2022&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zal",image:null,maintenance:{insurance:490,registration:108,service:320,total:918}},
   {id:"volvo-v90-2021",make:"Volvo",model:"V90",year:2021,price:35000,km:30000,length:4.94,trunk:560,fuel:"diesel",owners:1,type:"wagon",img:"🚙",siOrigin:false,tags:["scandinavian-design","safety"],link:"https://www.avto.net/Ads/results.asp?znamka=Volvo&model=V90&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONL",image:null,maintenance:{insurance:650,registration:128,service:390,total:1168}},
   {id:"opel-insignia-2020",make:"Opel",model:"Insignia Sports Tourer",year:2020,price:22000,km:40000,length:4.99,trunk:560,fuel:"diesel",owners:1,type:"wagon",img:"⚡️",siOrigin:false,tags:["premium-features","spacious"],link:"https://www.avto.net/Ads/results.asp?znamka=Opel&model=Insignia&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2020&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija",image:null,maintenance:{insurance:570,registration:110,service:340,total:1020}},
   {id:"cupra-leon-2021",make:"Cupra",model:"Leon Sportstourer",year:2021,price:32000,km:25000,length:4.64,trunk:620,fuel:"petrol",owners:1,type:"wagon",img:"🔥",siOrigin:false,tags:["performance","stylish"],link:"https://www.avto.net/Ads/results.asp?znamka=Cupra&model=Leon&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=",image:null,maintenance:{insurance:610,registration:125,service:330,total:1065}},
@@ -555,10 +549,6 @@ const FALLBACK_CARS = [
   {id:"hyundai-i30wagon-2021",make:"Hyundai",model:"i30 Wagon",year:2021,price:17000,km:35000,length:4.50,trunk:602,fuel:"petrol",owners:1,type:"wagon",img:"🇰🇷",siOrigin:true,tags:["value","practical"],link:"https://www.avto.net/Ads/results.asp?znamka=Hyundai&model=i30&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=",image:null,maintenance:{insurance:490,registration:105,service:320,total:915}},
   {id:"vw-golfvariant-2019",make:"VW",model:"Golf Variant",year:2019,price:19500,km:50000,length:4.56,trunk:605,fuel:"diesel",owners:1,type:"wagon",img:"🚗",siOrigin:false,tags:["compact","efficient"],link:"https://www.avto.net/Ads/results.asp?znamka=Volkswagen&model=Golf&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2019&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=",image:null,maintenance:{insurance:520,registration:120,service:310,total:950}},
   {id:"kia-proceed-2021",make:"Kia",model:"Proceed",year:2021,price:23000,km:20000,length:4.60,trunk:594,fuel:"petrol",owners:1,type:"wagon",img:"🚗",siOrigin:true,tags:["stylish","practical"],link:"https://www.avto.net/Ads/results.asp?znamka=Kia&model=Proceed&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=0&mocMax=999999&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=0&motorvalji=0&lokacija=0&sirina=0&dolzina=&dolzinaMIN=0&dolzinaMAX=100&nosilnostMIN=0&nosilnostMAX=999999&sedezevMIN=0&sedezevMAX=9&lezisc=&presek=0&premer=0&col=0&vijakov=0&EToznaka=0&vozilo=&airbag=&barva=&barvaint=&doseg=0&BkType=0&BkOkvir=0&BkOkvirType=0&Bk4=0&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1110100120&EQ8=1010000000&EQ9=1000000020&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=",image:null,maintenance:{insurance:540,registration:130,service:290,total:960}},
-
-
-
-
 
   // --- 🛻 SUVs (Terenska vozila) ---
   {id:"toyota-rav4-2021",make:"Toyota",model:"RAV4",year:2021,price:34500,km:42000,length:4.60,trunk:580,fuel:"hybrid",owners:1,type:"suv",img:"🛻",siOrigin:false,tags:["reliable","efficient-suv"],link:"https://www.avto.net/Ads/results.asp?znamka=Toyota&model=RAV4&modelID=&tip=katerikoli%20tip&znamka2=&model2=&tip2=katerikoli%20tip&znamka3=&model3=&tip3=katerikoli%20tip&cenaMin=0&cenaMax=999999&letnikMin=2021&letnikMax=2090&bencin=0&starost2=999&oblika=0&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&sedezevMIN=&sedezevMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&doseg=&BkType=&BkOkvir=&BkOkvirType=&Bk4=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000000120&EQ8=1010000000&EQ9=100000002&EQ10=1000000000&EQ11=1000000000&KAT=1010000000&PIA=&PIAzero=&PIAOut=&PSLO=&akcija=&paketgarancije=&broker=&prikazkategorije=&kategorija=&ONLvid=&ONLnak=&zaloga=&arhiv=&presort=&tipsort=&stran=",image:null,maintenance:{insurance:580,registration:110,service:280,total:970}},
@@ -599,9 +589,9 @@ const VIBES = [
   {type:"wagon", label:"Karavan",       icon:"🚐", desc:"Practical. Loads of space."},
 ];
 const QUESTIONS = [
-  {key:"fuelMatters",      yes:"Da, prihrani mi denar",    no:"Ne, všeč mi je bencin",    q:"Ali te skrbijo stroški goriva?",  icon:"⛽"},
-  {key:"parkingNightmare", yes:"Da, parkiranje je pekel",  no:"Ne, imam dovolj prostora",  q:"Je parkiranje nočna mora?",       icon:"🅿️"},
-  {key:"bigFamily",        yes:"Da, pes/otroci vključeni", no:"Ne, samo jaz",              q:"Potrebuješ velik prtljažnik?",    icon:"🐕"},
+  {key:"fuelMatters",      yes:"Da — samo diesel/hibrid/elektro/lpg", no:"Ne, všeč mi je bencin",    q:"Ali te skrbijo stroški goriva?",  icon:"⛽"},
+  {key:"parkingNightmare", yes:"Da — daj mi avto pod 4.2m",            no:"Ne, imam dovolj prostora",  q:"Je parkiranje nočna mora?",       icon:"🅿️"},
+  {key:"bigFamily",        yes:"Da — rabim 450L+ prtljažnik",          no:"Ne, samo jaz",              q:"Potrebuješ velik prtljažnik?",    icon:"🐕"},
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -785,21 +775,58 @@ function loadFromURL() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// SCORING
+// SCORING — HARD FILTERS + SOFT RANKING
 // ═══════════════════════════════════════════════════════════════════
 function scoreCar(car) {
-  let s = 0;
-  if (car.type === S.type) s += 20;
-  if (S.fuelMatters && ['diesel','hybrid','lpg','electric'].includes(car.fuel)) s += 15;
-  if (S.parkingNightmare && car.length < 4.2) s += 15;
-  if (S.bigFamily && car.trunk > 450) s += 15;
-  if (car.price <= S.maxPrice) s += 10;
-  if (car.year >= S.minYear) s += 10;
-  if (S.antiLemon && car.owners > 3) s -= 30;
+  // ── HARD FILTERS: return -1 to exclude completely ──────────────
+  // Type is always mandatory
+  if (car.type !== S.type) return -1;
+
+  // Fuel: YES answer → ONLY eco fuels; petrol excluded
+  if (S.fuelMatters && !['diesel','hybrid','lpg','electric'].includes(car.fuel)) return -1;
+
+  // Parking: YES answer → ONLY cars shorter than 4.2m
+  if (S.parkingNightmare && car.length >= 4.2) return -1;
+
+  // Big family / trunk: YES answer → ONLY 450L+ trunks
+  if (S.bigFamily && car.trunk <= 450) return -1;
+
+  // Price hard filter
+  if (car.price > S.maxPrice) return -1;
+
+  // Year hard filter
+  if (car.year < S.minYear) return -1;
+
+  // SI only hard filter
   if (S.siOnly && !car.siOrigin) return -1;
+
+  // Anti-lemon hard filter
+  if (S.antiLemon && car.owners > 3) return -1;
+
+  // ── SOFT RANKING: cars that pass filters get ranked ────────────
+  let s = 20; // base score for passing all hard filters
+
+  // Bonus for eco fuel even when not required
+  if (['diesel','hybrid','lpg','electric'].includes(car.fuel)) s += 5;
+
+  // Bonus for compact cars
+  if (car.length < 4.2) s += 3;
+
+  // Bonus for large trunk
+  if (car.trunk > 450) s += 5;
+
+  // Reliability bonus
   if (['Toyota','Honda','Mazda','Subaru'].includes(car.make)) s += 5;
+
+  // Prefer single owner
   if (car.owners === 1) s += 5;
+
+  // SI origin bonus
   if (car.siOrigin) s += 3;
+
+  // Prefer newer cars
+  s += Math.max(0, car.year - 2018);
+
   return s;
 }
 
@@ -1249,7 +1276,7 @@ function clearLiked() {
   liked = []; saveLiked(); renderLib();
 }
 
-// ─── RESTART ─────────────────────────────────────────────────────────────────
+// ─── RESTART ─────────────────────────────────
 function restart() {
   S = {step:0,qIdx:0,type:null,fuelMatters:false,parkingNightmare:false,bigFamily:false,maxPrice:30000,minYear:2018,antiLemon:false,siOnly:false,results:[],cardIndex:0};
   history.replaceState(null,'',location.pathname);
