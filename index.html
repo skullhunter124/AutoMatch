@@ -808,8 +808,8 @@ function scoreCar(car) {
   // SI only hard filter
   if (S.siOnly && !car.siOrigin) return -1;
 
-  // Transmission hard filter
-  if (S.transmission !== 'any' && car.transmission !== S.transmission) return -1;
+  // Transmission hard filter (only filter if car has transmission specified)
+  if (S.transmission !== 'any' && car.transmission && car.transmission !== S.transmission) return -1;
 
   // ── SOFT RANKING: cars that pass filters get ranked ────────────
   let s = 20; // base score for passing all hard filters

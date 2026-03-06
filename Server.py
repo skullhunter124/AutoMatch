@@ -348,7 +348,7 @@ def parse_listing(el, car_type):
         id=car_id, make=make, model=model, year=year, price=price, km=km,
         fuel=fuel, owners=owners, type=car_type, siOrigin=si,
         length=length, trunk=trunk, img=img, image=image,
-        tags=tags, link=link, maintenance=maint,
+        tags=tags, link=link, maintenance=maint, transmission=transmission,
         scrapedAt=datetime.now(timezone.utc).isoformat(),
     )
 
