@@ -235,7 +235,16 @@ def detect_fuel(text):
     return "petrol"
 
 
-def build_tags(make, fuel, owners, si, length, trunk):
+def detect_transmission(text):
+    t = text.lower()
+    if "avtomat" in t or "automatik" in t or "avto" in t:
+        return "automatic"
+    if "ročni" in t or "manual" in t or "ročn" in t:
+        return "manual"
+    return None
+
+
+def build_tags(make, fuel, owners, si, length, trunk, transmission):
     tags = []
     if make in ("Toyota","Honda","Mazda","Subaru"):    tags.append("reliable")
     if fuel in ("hybrid","electric"):                  tags.append("eco")
@@ -245,6 +254,8 @@ def build_tags(make, fuel, owners, si, length, trunk):
     if trunk > 550:                                    tags.append("large-trunk")
     if length < 4.2:                                   tags.append("small")
     if make in ("BMW","Mercedes","Audi","Volvo","Lexus","Porsche"): tags.append("premium")
+    if transmission == "automatic":                           tags.append("automatic")
+    if transmission == "manual":                             tags.append("manual")
     return tags
 
 
@@ -310,9 +321,9 @@ def parse_listing(el, car_type):
     year = int(ym.group(1)) if ym else 2018
     km_m = re.search(r"(\d[\d\.]+)\s*km", text, re.I)
     km   = int(re.sub(r"\.", "", km_m.group(1))) if km_m else 0
-
     # ── Other fields ───────────────────────────────────────────
-    fuel   = detect_fuel(text)
+    fuel        = detect_fuel(text)
+    transmission = detect_transmission(text)
     om     = re.search(r"(\d)\.\s*lastni", text, re.I)
     owners = int(om.group(1)) if om else 2
     si     = any(kw in text.lower() for kw in SI_KEYWORDS)
@@ -327,7 +338,7 @@ def parse_listing(el, car_type):
     length, trunk = get_specs(model)
     maint = MAINTENANCE.get(fuel, MAINTENANCE["petrol"]).copy()
     maint["total"] = maint["insurance"] + maint["registration"] + maint["service"]
-    tags  = build_tags(make, fuel, owners, si, length, trunk)
+    tags  = build_tags(make, fuel, owners, si, length, trunk, transmission)
     icons = {"city": "🚗", "sedan": "🚘", "wagon": "🚐", "suv": "🛻"}
     img   = "🏎️" if make in ("BMW","Mercedes","Audi","Porsche") else icons.get(car_type, "🚗")
     car_id = re.sub(r"[^a-z0-9\-]", "",

@@ -188,6 +188,14 @@ input[type=range]::-webkit-slider-thumb{
   transition:transform .2s;
 }
 .toggle input:checked + .toggle-track::after{transform:translateX(20px)}
+.tr-btn{
+  flex:1;padding:10px 8px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--bg3);color:var(--muted);cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  transition:all .2s;text-align:center;
+}
+.tr-btn:hover{border-color:var(--accent);color:var(--text)}
+.tr-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:white}
 .btn-go{
   width:100%;padding:20px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -603,7 +611,7 @@ let liked = JSON.parse(localStorage.getItem('am-liked') || '[]');
 let S = {
   step:0, qIdx:0,
   type:null, fuelMatters:false, parkingNightmare:false, bigFamily:false,
-  maxPrice:30000, minYear:2018, antiLemon:false, siOnly:false,
+  maxPrice:30000, minYear:2018, transmission:'any', siOnly:false,
   results:[], cardIndex:0,
 };
 
@@ -753,7 +761,7 @@ function buildShareURL() {
     bf: S.bigFamily?1:0,
     mp: S.maxPrice,
     my: S.minYear,
-    al: S.antiLemon?1:0,
+    tr: S.transmission||'any',
     si: S.siOnly?1:0,
   });
   return `${location.origin}${location.pathname}?${p.toString()}`;
@@ -768,7 +776,7 @@ function loadFromURL() {
   S.bigFamily        = p.get('bf') === '1';
   S.maxPrice         = parseInt(p.get('mp')) || 30000;
   S.minYear          = parseInt(p.get('my')) || 2018;
-  S.antiLemon        = p.get('al') === '1';
+  S.transmission     = p.get('tr') || 'any';
   S.siOnly           = p.get('si') === '1';
   // jump to results
   computeResults();
@@ -800,8 +808,8 @@ function scoreCar(car) {
   // SI only hard filter
   if (S.siOnly && !car.siOrigin) return -1;
 
-  // Anti-lemon hard filter
-  if (S.antiLemon && car.owners > 3) return -1;
+  // Transmission hard filter
+  if (S.transmission !== 'any' && car.transmission !== S.transmission) return -1;
 
   // ── SOFT RANKING: cars that pass filters get ranked ────────────
   let s = 20; // base score for passing all hard filters
@@ -958,15 +966,16 @@ function renderBudget() {
         <div class="s-mm"><span>2010</span><span>2024</span></div>
       </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <div class="t-title">🍋 ANTI-LEMON</div>
-          <div class="t-sub">Filtriraj avte z 3+ lastniki</div>
+      <div class="s-card" style="padding:18px 22px">
+        <div class="s-row" style="margin-bottom:10px">
+          <span class="s-lbl">⚙️ MENJALNIK</span>
+          <span class="s-val" id="trval" style="font-size:18px">${S.transmission === 'any' ? 'Vsi' : S.transmission === 'automatic' ? 'Avtomatik' : 'Ročni'}</span>
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="cb-lemon" ${S.antiLemon?'checked':''} onchange="S.antiLemon=this.checked"/>
-          <div class="toggle-track"></div>
-        </label>
+        <div style="display:flex;gap:8px">
+          <button class="tr-btn ${S.transmission === 'any' ? 'active' : ''}" onclick="S.transmission='any';document.getElementById('trval').textContent='Vsi';this.parentElement.querySelectorAll('.tr-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">VSI</button>
+          <button class="tr-btn ${S.transmission === 'automatic' ? 'active' : ''}" onclick="S.transmission='automatic';document.getElementById('trval').textContent='Avtomatik';this.parentElement.querySelectorAll('.tr-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">AVTOMATIK</button>
+          <button class="tr-btn ${S.transmission === 'manual' ? 'active' : ''}" onclick="S.transmission='manual';document.getElementById('trval').textContent='Ročni';this.parentElement.querySelectorAll('.tr-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">ROČNI</button>
+        </div>
       </div>
 
       <div class="toggle-row">
@@ -1278,7 +1287,7 @@ function clearLiked() {
 
 // ─── RESTART ─────────────────────────────────
 function restart() {
-  S = {step:0,qIdx:0,type:null,fuelMatters:false,parkingNightmare:false,bigFamily:false,maxPrice:30000,minYear:2018,antiLemon:false,siOnly:false,results:[],cardIndex:0};
+  S = {step:0,qIdx:0,type:null,fuelMatters:false,parkingNightmare:false,bigFamily:false,maxPrice:30000,minYear:2018,transmission:'any',siOnly:false,results:[],cardIndex:0};
   history.replaceState(null,'',location.pathname);
   go(() => render());
 }
